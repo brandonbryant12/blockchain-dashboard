@@ -1,13 +1,10 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server';
-
 import { RpcClient } from '@/lib/rpcClient';
 import { NodeInfo } from '@/lib/types';
 
 export async function getNodeStatus(): Promise<NodeInfo[]> {
   const nodes: NodeInfo[] = [];
-
-  // Configure RPC clients
   const btcClient = new RpcClient({
     protocol: 'http',
     user: process.env.BTC_RPC_USER!,
@@ -15,7 +12,6 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
     host: process.env.BTC_RPC_HOST!,
     port: parseInt(process.env.BTC_RPC_PORT!),
   });
-
   const fractalClient = new RpcClient({
     protocol: 'http',
     user: process.env.FRACTAL_RPC_USER!,
@@ -24,7 +20,6 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
     port: parseInt(process.env.FRACTAL_RPC_PORT!),
   });
 
-  // Fetch BTC node status
   try {
     const btcInfo = await btcClient.call('getblockchaininfo');
     nodes.push({
@@ -33,6 +28,7 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
       ticker: 'BTC',
       currentBlock: btcInfo.blocks,
       healthy: true,
+      icon: '/btc.png'  // Reference to the icon in the public directory
     });
   } catch (error: any) {
     console.error('Error fetching BTC node status:', error.message);
@@ -42,10 +38,10 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
       ticker: 'BTC',
       currentBlock: 0,
       healthy: false,
+      icon: '/btc.png'  // Even for unhealthy state, we use the same icon
     });
   }
 
-  // Fetch Fractal node status
   try {
     const fractalInfo = await fractalClient.call('getblockchaininfo');
     nodes.push({
@@ -54,6 +50,7 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
       ticker: 'FBTC',
       currentBlock: fractalInfo.blocks,
       healthy: true,
+      icon: '/fractal.jpeg'  // Reference to the icon in the public directory
     });
   } catch (error: any) {
     console.error('Error fetching Fractal node status:', error.message);
@@ -63,9 +60,9 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
       ticker: 'FBTC',
       currentBlock: 0,
       healthy: false,
+      icon: '/fractal.jpeg'  // Even for unhealthy state, we use the same icon
     });
   }
 
   return nodes;
 }
-

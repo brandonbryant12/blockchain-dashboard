@@ -4,4 +4,5 @@ export interface NodeInfo {
   ticker: string;
   currentBlock: number;
   healthy: boolean;
+  icon: string;
 }
