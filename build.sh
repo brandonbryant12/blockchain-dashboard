@@ -64,4 +64,6 @@ To use these variables in your current shell session, run this script with sourc
     source ./build.sh
 "
 
+sudo cp .env ./dashboard/.env
+
 sudo -E docker-compose up --build -d
