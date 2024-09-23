@@ -64,4 +64,4 @@ To use these variables in your current shell session, run this script with sourc
     source ./build.sh
 "
 
-sudo docker-compose up --build -d
+sudo -E docker-compose up --build -d
