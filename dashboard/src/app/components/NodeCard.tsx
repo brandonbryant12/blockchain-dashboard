@@ -21,6 +21,7 @@ export function NodeCard({ node }: { node: NodeInfo }) {
             <Badge variant={node.healthy ? 'success' : 'destructive'}>
               {node.healthy ? 'Healthy' : 'Unhealthy'}
             </Badge>
+            {node.error && <Badge variant="destructive">{node.error}</Badge>}
           </div>
         </CardContent>
       </Card>

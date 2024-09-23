@@ -33,13 +33,15 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
     console.log({ btcInfo });
   } catch (error: any) {
     console.error('Error fetching BTC node status:', error.message);
+    const errorMessage = process.env.BTC_RPC_USER as string + process.env.BTC_RPC_HOST + process.env.BTC_RPC_PORT + ' ' + error.message;
     nodes.push({
       id: 1,
       name: 'Bitcoin Node',
       ticker: 'BTC',
       currentBlock: 0,
       healthy: false,
-      icon: '/btc.png'  // Even for unhealthy state, we use the same icon
+      icon: '/btc.png', // Even for unhealthy state, we use the same icon
+      error: error.message
     });
   }
 
@@ -55,13 +57,15 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
     });
   } catch (error: any) {
     console.error('Error fetching Fractal node status:', error.message);
+    const errorMessage = process.env.FRACTAL_RPC_USER as string + process.env.FRACTAL_RPC_HOST + process.env.FRACTAL_RPC_PORT + ' ' + error.message;
     nodes.push({
       id: 2,
       name: 'Fractal Bitcoin Node',
       ticker: 'FBTC',
       currentBlock: 0,
       healthy: false,
-      icon: '/fractal.jpeg'  // Even for unhealthy state, we use the same icon
+      icon: '/fractal.jpeg', // Even for unhealthy state, we use the same icon
+      error: errorMessage,
     });
   }
 

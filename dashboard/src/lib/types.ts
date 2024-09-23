@@ -5,4 +5,5 @@ export interface NodeInfo {
   currentBlock: number;
   healthy: boolean;
   icon: string;
+  error?: string;
 }
