@@ -51,10 +51,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    deploy:
-      resources:
-        limits:
-          memory: 40G
     mem_limit: 40G
     memswap_limit: 60G
     mem_swappiness: 100
@@ -68,20 +64,19 @@ services:
     build:
       context: ./dashboard
       dockerfile: Dockerfile
-      # Optionally remove BUILDTIME_ENV_VARS if not needed
       args:
         BUILDTIME_ENV_VARS: "${BTC_RPC_USER},${BTC_RPC_PASSWORD},${BTC_RPC_HOST},${BTC_RPC_PORT},${FRACTAL_RPC_USER},${FRACTAL_RPC_PASSWORD},${FRACTAL_RPC_HOST},${FRACTAL_RPC_PORT},${MASTER_PASSWORD},${JWT_SECRET}"
     ports:
       - "3000:3000"
     environment:
-      BTC_RPC_USER: ${BTC_RPC_USER}
-      BTC_RPC_PASSWORD: ${BTC_RPC_PASSWORD}
-      BTC_RPC_HOST: ${BTC_RPC_HOST}
-      BTC_RPC_PORT: ${BTC_RPC_PORT}
-      FRACTAL_RPC_USER: ${FRACTAL_RPC_USER}
-      FRACTAL_RPC_PASSWORD: ${FRACTAL_RPC_PASSWORD}
-      FRACTAL_RPC_HOST: ${FRACTAL_RPC_HOST}
-      FRACTAL_RPC_PORT: ${FRACTAL_RPC_PORT}
-      MASTER_PASSWORD: ${MASTER_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
-      DASHBOARD_ENV_VARS: "${BTC_RPC_USER},${BTC_RPC_PASSWORD},${BTC_RPC_HOST},${BTC_RPC_PORT},${FRACTAL_RPC_USER},${FRACTAL_RPC_PASSWORD},${FRACTAL_RPC_HOST},${FRACTAL_RPC_PORT},${MASTER_PASSWORD},${JWT_SECRET}"
+      - BTC_RPC_USER
+      - BTC_RPC_PASSWORD
+      - BTC_RPC_HOST
+      - BTC_RPC_PORT
+      - FRACTAL_RPC_USER
+      - FRACTAL_RPC_PASSWORD
+      - FRACTAL_RPC_HOST
+      - FRACTAL_RPC_PORT
+      - MASTER_PASSWORD
+      - JWT_SECRET
+      - DASHBOARD_ENV_VARS=${BTC_RPC_USER},${BTC_RPC_PASSWORD},${BTC_RPC_HOST},${BTC_RPC_PORT},${FRACTAL_RPC_USER},${FRACTAL_RPC_PASSWORD},${FRACTAL_RPC_HOST},${FRACTAL_RPC_PORT},${MASTER_PASSWORD},${JWT_SECRET}

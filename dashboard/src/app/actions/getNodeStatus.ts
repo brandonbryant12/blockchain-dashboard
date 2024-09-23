@@ -30,6 +30,7 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
       healthy: true,
       icon: '/btc.png'  // Reference to the icon in the public directory
     });
+    console.log({ btcInfo });
   } catch (error: any) {
     console.error('Error fetching BTC node status:', error.message);
     nodes.push({
