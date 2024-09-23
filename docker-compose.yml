@@ -66,7 +66,7 @@ services:
 
   dashboard:
     build:
-      context: .
+      context: ./dashboard
       dockerfile: Dockerfile
       args:
         - BUILDTIME_ENV_VARS=${BTC_RPC_USER},${BTC_RPC_PASSWORD},${BTC_RPC_HOST},${BTC_RPC_PORT},${FRACTAL_RPC_USER},${FRACTAL_RPC_PASSWORD},${FRACTAL_RPC_HOST},${FRACTAL_RPC_PORT},${MASTER_PASSWORD},${JWT_SECRET}
