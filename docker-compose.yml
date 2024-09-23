@@ -1,5 +1,7 @@
 version: '3.8'
 
+env_file: .env
+
 services:
   btc-node:
     image: bitcoin/bitcoin:latest
@@ -63,22 +65,10 @@ services:
   dashboard:
     build:
       context: ./dashboard
-      env_file:
-        - .env
       dockerfile: Dockerfile
       args:
         BUILDTIME_ENV_VARS: "${BTC_RPC_USER},${BTC_RPC_PASSWORD},${BTC_RPC_HOST},${BTC_RPC_PORT},${FRACTAL_RPC_USER},${FRACTAL_RPC_PASSWORD},${FRACTAL_RPC_HOST},${FRACTAL_RPC_PORT},${MASTER_PASSWORD},${JWT_SECRET}"
     ports:
       - "3000:3000"
     environment:
-      - BTC_RPC_USER
-      - BTC_RPC_PASSWORD
-      - BTC_RPC_HOST
-      - BTC_RPC_PORT
-      - FRACTAL_RPC_USER
-      - FRACTAL_RPC_PASSWORD
-      - FRACTAL_RPC_HOST
-      - FRACTAL_RPC_PORT
-      - MASTER_PASSWORD
-      - JWT_SECRET
       - DASHBOARD_ENV_VARS=${BTC_RPC_USER},${BTC_RPC_PASSWORD},${BTC_RPC_HOST},${BTC_RPC_PORT},${FRACTAL_RPC_USER},${FRACTAL_RPC_PASSWORD},${FRACTAL_RPC_HOST},${FRACTAL_RPC_PORT},${MASTER_PASSWORD},${JWT_SECRET}
