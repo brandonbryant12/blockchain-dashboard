@@ -10,11 +10,11 @@ services:
       -rpcuser=$${BTC_RPC_USER}
       -rpcpassword=$${BTC_RPC_PASSWORD}"
     environment:
-      - BTC_RPC_USER=${BTC_RPC_USER}
-      - BTC_RPC_PASSWORD=${BTC_RPC_PASSWORD}
+      BTC_RPC_USER: ${BTC_RPC_USER}
+      BTC_RPC_PASSWORD: ${BTC_RPC_PASSWORD}
     ports:
-      - "8332:8332"  # BTC RPC
-      - "8333:8333"  # BTC P2P
+      - "8332:8332"
+      - "8333:8333"
     volumes:
       - ./btc/data:/data
       - ./btc/bitcoin.conf:/bitcoin.conf
@@ -34,27 +34,23 @@ services:
     container_name: fractal-node
     restart: always
     command: >
-      sh -c "bitcoind -conf=/bitcoin.conf -datadir=/data -maxtipage=504576000
+      sh -c "fractal -conf=/bitcoin.conf -datadir=/data -maxtipage=504576000
       -rpcuser=$${FRACTAL_RPC_USER}
       -rpcpassword=$${FRACTAL_RPC_PASSWORD}"
     environment:
-      - FRACTAL_RPC_USER=${FRACTAL_RPC_USER}
-      - FRACTAL_RPC_PASSWORD=${FRACTAL_RPC_PASSWORD}
+      FRACTAL_RPC_USER: ${FRACTAL_RPC_USER}
+      FRACTAL_RPC_PASSWORD: ${FRACTAL_RPC_PASSWORD}
     ports:
-      - "18332:8332"
-      - "18333:8333"
+      - "18332:18332"
+      - "18333:18333"
     volumes:
       - ./fractal/data:/data
       - ./fractal/bitcoin.conf:/bitcoin.conf
     healthcheck:
-      test: ["CMD", "bitcoin-cli", "-conf=/bitcoin.conf", "-datadir=/data", "getblockchaininfo"]
+      test: ["CMD", "fractal-cli", "-conf=/bitcoin.conf", "-datadir=/data", "getblockchaininfo"]
       interval: 30s
       timeout: 10s
       retries: 5
-    deploy:
-      resources:
-        limits:
-          memory: 40G
     mem_limit: 40G
     memswap_limit: 60G
     mem_swappiness: 100
@@ -69,18 +65,18 @@ services:
       context: ./dashboard
       dockerfile: Dockerfile
       args:
-        - BUILDTIME_ENV_VARS=${BTC_RPC_USER},${BTC_RPC_PASSWORD},${BTC_RPC_HOST},${BTC_RPC_PORT},${FRACTAL_RPC_USER},${FRACTAL_RPC_PASSWORD},${FRACTAL_RPC_HOST},${FRACTAL_RPC_PORT},${MASTER_PASSWORD},${JWT_SECRET}
+        BUILDTIME_ENV_VARS: "${BTC_RPC_USER},${BTC_RPC_PASSWORD},${BTC_RPC_HOST},${BTC_RPC_PORT},${FRACTAL_RPC_USER},${FRACTAL_RPC_PASSWORD},${FRACTAL_RPC_HOST},${FRACTAL_RPC_PORT},${MASTER_PASSWORD},${JWT_SECRET}"
     ports:
-      - "80:80"
+      - "3000:3000"
     environment:
-      - BTC_RPC_USER
-      - BTC_RPC_PASSWORD
-      - BTC_RPC_HOST
-      - BTC_RPC_PORT
-      - FRACTAL_RPC_USER
-      - FRACTAL_RPC_PASSWORD
-      - FRACTAL_RPC_HOST
-      - FRACTAL_RPC_PORT
-      - MASTER_PASSWORD
-      - JWT_SECRET
-      - DASHBOARD_ENV_VARS=${BTC_RPC_USER},${BTC_RPC_PASSWORD},${BTC_RPC_HOST},${BTC_RPC_PORT},${FRACTAL_RPC_USER},${FRACTAL_RPC_PASSWORD},${FRACTAL_RPC_HOST},${FRACTAL_RPC_PORT},${MASTER_PASSWORD},${JWT_SECRET}
+      BTC_RPC_USER: ${BTC_RPC_USER}
+      BTC_RPC_PASSWORD: ${BTC_RPC_PASSWORD}
+      BTC_RPC_HOST: ${BTC_RPC_HOST}
+      BTC_RPC_PORT: ${BTC_RPC_PORT}
+      FRACTAL_RPC_USER: ${FRACTAL_RPC_USER}
+      FRACTAL_RPC_PASSWORD: ${FRACTAL_RPC_PASSWORD}
+      FRACTAL_RPC_HOST: ${FRACTAL_RPC_HOST}
+      FRACTAL_RPC_PORT: ${FRACTAL_RPC_PORT}
+      MASTER_PASSWORD: ${MASTER_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      DASHBOARD_ENV_VARS: "${BTC_RPC_USER},${BTC_RPC_PASSWORD},${BTC_RPC_HOST},${BTC_RPC_PORT},${FRACTAL_RPC_USER},${FRACTAL_RPC_PASSWORD},${FRACTAL_RPC_HOST},${FRACTAL_RPC_PORT},${MASTER_PASSWORD},${JWT_SECRET}"
