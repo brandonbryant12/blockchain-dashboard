@@ -9,7 +9,7 @@ WORKDIR /app
 # Copy package.json and lock files
 COPY package.json package-lock.json* ./
 
-# Install dependencies based on the preferred package manager
+# Install dependencies
 RUN if [ -f package-lock.json ]; then \
       npm ci; \
       npm update; \
@@ -18,7 +18,7 @@ RUN if [ -f package-lock.json ]; then \
       echo "Lockfile not found." && exit 1; \
     fi
 
-# Rebuild the source code only when needed
+# Build the source code
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -31,7 +31,7 @@ ENV BUILDTIME_ENV_VARS=${BUILDTIME_ENV_VARS}
 # Build the application
 RUN npm run build
 
-# Production image, copy all the files and run next
+# Production image
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV production
@@ -44,14 +44,14 @@ RUN adduser --system --uid 1001 nextjs
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
-# Set the correct permission for prerender cache
+# Set permissions
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
 
 # Copy the built application
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 
-# Copy standalone output if it exists, otherwise copy the entire .next folder
+# Handle standalone output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./standalone
 RUN if [ -d "./standalone" ]; then \
       cp -R ./standalone/* ./; \
@@ -64,15 +64,17 @@ RUN if [ -d "./standalone" ]; then \
 ARG DASHBOARD_ENV_VARS
 ENV DASHBOARD_ENV_VARS=${DASHBOARD_ENV_VARS}
 
+# **Add these lines to make BUILDTIME_ENV_VARS available in the runner stage**
+ARG BUILDTIME_ENV_VARS
+ENV BUILDTIME_ENV_VARS=${BUILDTIME_ENV_VARS}
+
 USER nextjs
 
 # Expose port 3000
 EXPOSE 3000
 
-# Set the host to 0.0.0.0 to make the server accessible externally
+# Set host and port
 ENV HOSTNAME "0.0.0.0"
-
-# Set the port to 3000
 ENV PORT 3000
 
 # Start the application
