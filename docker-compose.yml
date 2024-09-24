@@ -59,6 +59,9 @@ services:
     env_file: .env
     networks:
       - blockchain_network
+    depends_on:
+    - btc-node
+    - fractal-node
 networks:
   blockchain_network:
     driver: bridge
