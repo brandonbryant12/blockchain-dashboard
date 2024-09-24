@@ -39,7 +39,8 @@ export class RpcClient {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
+        const errorBody = await response.text();
+        throw new Error(`HTTP error! status: ${response.status} ${response.statusText}, ${errorBody}`);
       }
 
       const text = await response.text();
