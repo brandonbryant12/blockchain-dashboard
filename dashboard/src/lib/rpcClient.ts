@@ -35,6 +35,7 @@ export class RpcClient {
         },
         body,
         agent: undefined, // Add agent if needed
+        signal: AbortSignal.timeout(1000) 
       });
 
       if (!response.ok) {
