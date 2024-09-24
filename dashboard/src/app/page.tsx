@@ -1,8 +1,14 @@
+// src/app/page.tsx
+
+// Force dynamic rendering to ensure data fetching happens at runtime
+export const dynamic = 'force-dynamic';
+
 import { getNodeStatus } from './actions/getNodeStatus';
 import { NodeCard } from './components/NodeCard';
+import { NodeInfo } from '../lib/types';
 
 export default async function Dashboard() {
-  const nodes = await getNodeStatus();
+  const nodes: NodeInfo[] = await getNodeStatus();
 
   return (
     <div className="container mx-auto p-4">
