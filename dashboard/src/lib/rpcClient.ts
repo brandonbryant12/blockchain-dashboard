@@ -35,11 +35,11 @@ export class RpcClient {
         },
         body,
         agent: undefined, // Add agent if needed
-        signal: AbortSignal.timeout(5000) 
+        signal: AbortSignal.timeout(1000) 
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status} ${response.statusText}`);
       }
 
       const text = await response.text();
