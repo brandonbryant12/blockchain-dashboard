@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Stop and remove containers
-docker-compose down
+sudo docker-compose down
 
 # Generate .env file if it doesn't exist
 if [ ! -f .env ]; then
@@ -33,4 +33,4 @@ else
 fi
 
 # Start the services
-docker-compose up --build -d
+sudo docker-compose up --build -d
