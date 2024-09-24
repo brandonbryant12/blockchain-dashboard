@@ -18,6 +18,7 @@ services:
     volumes:
       - ./btc/data:/data
       - ./btc/bitcoin.conf:/bitcoin.conf
+    env_file: .env
     healthcheck:
       test: ["CMD", "bitcoin-cli", "-conf=/bitcoin.conf", "-datadir=/data", "ping"]
       interval: 30s
@@ -28,6 +29,7 @@ services:
 
   fractal-node:
     image: fractalbitcoin/fractal:v0.2.1
+    env_file: .env
     container_name: fractal-node
     restart: always
     command: >
