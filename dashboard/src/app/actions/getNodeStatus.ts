@@ -9,14 +9,14 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
     protocol: 'http',
     user: process.env.BTC_RPC_USER!,
     pass: process.env.BTC_RPC_PASSWORD!,
-    host: "btc-node",
+    host: process.env.BTC_RPC_HOST!,
     port: parseInt(process.env.BTC_RPC_PORT!),
   });
   const fractalClient = new RpcClient({
     protocol: 'http',
     user: process.env.FRACTAL_RPC_USER!,
     pass: process.env.FRACTAL_RPC_PASSWORD!,
-    host: "fractal-node",
+    host: process.env.FRACTAL_RPC_HOST!,
     port: parseInt(process.env.FRACTAL_RPC_PORT!),
   });
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import fetch from 'node-fetch';
+import axios, { AxiosInstance } from 'axios';
 
 interface RpcConfig {
   protocol: string;
@@ -11,50 +11,46 @@ interface RpcConfig {
 
 export class RpcClient {
   private config: RpcConfig;
+  private axiosInstance: AxiosInstance;
 
   constructor(config: RpcConfig) {
     this.config = config;
+    const { protocol, host, port, user, pass } = this.config;
+    
+    this.axiosInstance = axios.create({
+      baseURL: `${protocol}://${host}:${port}`,
+      auth: {
+        username: user,
+        password: pass
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      timeout: 1000 // 5 seconds timeout
+    });
   }
 
   async call(method: string, params: any[] = []) {
-    const { protocol, user, pass, host, port } = this.config;
-    const url = `${protocol}://${host}:${port}`;
-    const body = JSON.stringify({
-      jsonrpc: '1.0',
-      id: 'rpc-client',
-      method,
-      params,
-    });
-
     try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + Buffer.from(`${user}:${pass}`).toString('base64'),
-        },
-        body,
-        agent: undefined, // Add agent if needed
-        signal: AbortSignal.timeout(1000) 
+      const response = await this.axiosInstance.post('/', {
+        jsonrpc: '1.0',
+        id: 'rpc-client',
+        method,
+        params,
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (response.data.error) {
+        throw new Error(response.data.error.message);
       }
 
-      const text = await response.text();
-      if (!text) {
-        throw new Error('Empty response from server');
-      }
-
-      const data = JSON.parse(text);
-      if (data.error) {
-        throw new Error(data.error.message);
-      }
-
-      return data.result;
+      return response.data.result;
     } catch (error) {
-      console.error('RPC call failed:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('RPC call failed:', error.message);
+        console.error('Error details:', error.response?.data);
+      } else {
+        console.error('RPC call failed:', error);
+      }
       throw error;
     }
   }
