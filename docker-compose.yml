@@ -60,7 +60,7 @@ services:
     container_name: bells-node
     restart: always
     command: >
-      sh -c "./bellsd -conf=/bitcoin.conf -datadir=/data
+      sh -c "./bellsd -conf=/bells/bitcoin.conf -datadir=/data
       -rpcuser=$${BELLS_RPC_USER}
       -rpcpassword=$${BELLS_RPC_PASSWORD}"
     environment:
@@ -73,7 +73,7 @@ services:
       - ./bells/data:/data
       - ./bells/bitcoin.conf:/bells/bitcoin.conf
     healthcheck:
-      test: ["CMD", "bells-cli -conf=/bitcoin.conf -datadir=/data -rpcuser=${BELLS_RPC_USER} -rpcpassword=${BELLS_RPC_PASSWORD} getblockchaininfo"]
+      test: ["CMD", "bells-cli -conf=/bells/bitcoin.conf -datadir=/data -rpcuser=${BELLS_RPC_USER} -rpcpassword=${BELLS_RPC_PASSWORD} getblockchaininfo"]
       interval: 30s
       timeout: 10s
       retries: 5
