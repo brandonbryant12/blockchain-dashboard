@@ -18,7 +18,7 @@ RUN wget -O /tmp/bellscoinV3.tar.gz "https://github.com/Nintondo/bellscoinV3/rel
     tar -xzf /tmp/bellscoinV3.tar.gz -C /opt && \
     rm /tmp/bellscoinV3.tar.gz
 
-# Create necessary directories
+# Create necessary directories and set permissions
 RUN mkdir -p ${DATA_DIR} ${BELL_CONF_DIR} && \
     useradd -m bellscoinuser && \
     chown -R bellscoinuser:bellscoinuser ${DATA_DIR} ${BELL_CONF_DIR} /opt/bells-3.0.0-rc2
@@ -26,8 +26,8 @@ RUN mkdir -p ${DATA_DIR} ${BELL_CONF_DIR} && \
 # Switch to non-root user
 USER bellscoinuser
 
+# Set the working directory to where bellsd is located
+WORKDIR ${BINARY_DIR}
+
 # Expose ports
 EXPOSE 8332 8333
-
-# Set working directory
-WORKDIR /data
