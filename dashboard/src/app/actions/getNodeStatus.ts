@@ -3,16 +3,49 @@
 import { RpcClient } from '@/lib/rpcClient';
 import { NodeInfo } from '@/lib/types';
 
-export async function getNodeStatus(): Promise<NodeInfo[]> {
-  const nodes: NodeInfo[] = [];
+/**
+ * Helper function to fetch blockchain info from a node.
+ * @param client - The RPC client instance.
+ * @param nodeDetails - Details about the node.
+ * @returns A promise that resolves to a NodeInfo object.
+ */
+async function fetchNodeInfo(
+  client: RpcClient,
+  nodeDetails: { id: number; name: string; ticker: string; icon: string }
+): Promise<NodeInfo> {
+  try {
+    const info = await client.call('getblockchaininfo');
+    console.log({ [nodeDetails.name]: info });
+    return {
+      id: nodeDetails.id,
+      name: nodeDetails.name,
+      ticker: nodeDetails.ticker,
+      currentBlock: info.blocks,
+      healthy: true,
+      icon: nodeDetails.icon,
+    };
+  } catch (error: any) {
+    console.error(`Error fetching ${nodeDetails.name} status:`, error.message);
+    return {
+      id: nodeDetails.id,
+      name: nodeDetails.name,
+      ticker: nodeDetails.ticker,
+      currentBlock: 0,
+      healthy: false,
+      icon: nodeDetails.icon,
+      error: error.message,
+    };
+  }
+}
 
+export async function getNodeStatus(): Promise<NodeInfo[]> {
   // Initialize RPC Clients for each node
   const btcClient = new RpcClient({
     protocol: 'http',
     user: process.env.BTC_RPC_USER!,
     pass: process.env.BTC_RPC_PASSWORD!,
     host: process.env.BTC_RPC_HOST!,
-    port: parseInt(process.env.BTC_RPC_PORT!),
+    port: parseInt(process.env.BTC_RPC_PORT!, 10),
   });
 
   const fractalClient = new RpcClient({
@@ -20,7 +53,7 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
     user: process.env.FRACTAL_RPC_USER!,
     pass: process.env.FRACTAL_RPC_PASSWORD!,
     host: process.env.FRACTAL_RPC_HOST!,
-    port: parseInt(process.env.FRACTAL_RPC_PORT!),
+    port: parseInt(process.env.FRACTAL_RPC_PORT!, 10),
   });
 
   const bellsClient = new RpcClient({
@@ -28,82 +61,32 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
     user: process.env.BELLS_RPC_USER!,
     pass: process.env.BELLS_RPC_PASSWORD!,
     host: process.env.BELLS_RPC_HOST!,
-    port: parseInt(process.env.BELLS_RPC_PORT!),
+    port: parseInt(process.env.BELLS_RPC_PORT!, 10),
   });
 
-  // Fetch Bitcoin Node Status
-  try {
-    const btcInfo = await btcClient.call('getblockchaininfo');
-    nodes.push({
-      id: 1,
-      name: 'Bitcoin Node',
-      ticker: 'BTC',
-      currentBlock: btcInfo.blocks,
-      healthy: true,
-      icon: '/btc.png', // Reference to the icon in the public directory
-    });
-    console.log({ btcInfo });
-  } catch (error: any) {
-    console.error('Error fetching BTC node status:', error.message);
-    nodes.push({
-      id: 1,
-      name: 'Bitcoin Node',
-      ticker: 'BTC',
-      currentBlock: 0,
-      healthy: false,
-      icon: '/btc.png', // Even for unhealthy state, we use the same icon
-      error: error.message,
-    });
-  }
+  // Define node details
+  const nodesDetails = [
+    {
+      client: btcClient,
+      details: { id: 1, name: 'Bitcoin Node', ticker: 'BTC', icon: '/btc.png' },
+    },
+    {
+      client: fractalClient,
+      details: { id: 2, name: 'Fractal Bitcoin Node', ticker: 'FBTC', icon: '/fractal.jpeg' },
+    },
+    {
+      client: bellsClient,
+      details: { id: 3, name: 'Bellscoin Node', ticker: 'BELLS', icon: '/bells.png' },
+    },
+  ];
 
-  // Fetch Fractal Bitcoin Node Status
-  try {
-    const fractalInfo = await fractalClient.call('getblockchaininfo');
-    nodes.push({
-      id: 2,
-      name: 'Fractal Bitcoin Node',
-      ticker: 'FBTC',
-      currentBlock: fractalInfo.blocks,
-      healthy: true,
-      icon: '/fractal.jpeg', // Reference to the icon in the public directory
-    });
-  } catch (error: any) {
-    console.error('Error fetching Fractal node status:', error.message);
-    nodes.push({
-      id: 2,
-      name: 'Fractal Bitcoin Node',
-      ticker: 'FBTC',
-      currentBlock: 0,
-      healthy: false,
-      icon: '/fractal.jpeg', // Even for unhealthy state, we use the same icon
-      error: error.message,
-    });
-  }
+  // Create an array of promises for fetching node info
+  const fetchPromises = nodesDetails.map(({ client, details }) =>
+    fetchNodeInfo(client, details)
+  );
 
-  // Fetch Bellscoin Node Status
-  try {
-    const bellsInfo = await bellsClient.call('getblockchaininfo');
-    nodes.push({
-      id: 3,
-      name: 'Bellscoin Node',
-      ticker: 'BELLS',
-      currentBlock: bellsInfo.blocks,
-      healthy: true,
-      icon: '/bells.png', // Reference to the icon in the public directory
-    });
-    console.log({ bellsInfo });
-  } catch (error: any) {
-    console.error('Error fetching Bellscoin node status:', error.message);
-    nodes.push({
-      id: 3,
-      name: 'Bellscoin Node',
-      ticker: 'BELLS',
-      currentBlock: 0,
-      healthy: false,
-      icon: '/bells.png', // Even for unhealthy state, we use the same icon
-      error: error.message,
-    });
-  }
+  // Execute all fetch operations in parallel
+  const nodes = await Promise.all(fetchPromises);
 
   return nodes;
 }
