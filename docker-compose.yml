@@ -52,6 +52,33 @@ services:
       retries: 5
     networks:
       - blockchain_network
+  bells-node:
+    build:
+      context: ./bells
+      dockerfile: Dockerfile
+    env_file: .env
+    container_name: bells-node
+    restart: always
+    command: >
+      sh -c "bellsd -conf=/bells/bitcoin.conf -datadir=/data
+      -rpcuser=$${BELLS_RPC_USER}
+      -rpcpassword=$${BELLS_RPC_PASSWORD}"
+    environment:
+      - BELLS_RPC_USER=${BELLS_RPC_USER}
+      - BELLS_RPC_PASSWORD=${BELLS_RPC_PASSWORD}
+    ports:
+      - "28332:8332"
+      - "28333:8333"
+    volumes:
+      - ./bells/data:/data
+      - ./bells/bitcoin.conf:/bells/bitcoin.conf
+    healthcheck:
+      test: ["CMD", "bells-cli -conf=/bells/bitcoin.conf -datadir=/data -rpcuser=${BELLS_RPC_USER} -rpcpassword=${BELLS_RPC_PASSWORD} getblockchaininfo"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - blockchain_network
   dashboard:
     build:
       context: ./dashboard
