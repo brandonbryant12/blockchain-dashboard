@@ -79,7 +79,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
-    env_file: .env
+    env_file: ./dashboard/.env
     networks:
       - blockchain_network
 networks:
