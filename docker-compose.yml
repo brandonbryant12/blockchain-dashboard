@@ -36,6 +36,12 @@ services:
       - ./fractal/bitcoin.conf:/bitcoin.conf
     networks:
       - blockchain_network
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/bitcoin-cli", "-conf=/bitcoin.conf", "-rpcuser=${FRACTAL_RPC_USER}", "-rpcpassword=${FRACTAL_RPC_PASSWORD}", "getblockchaininfo"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
   bells-node:
     build:
       context: ./bells
