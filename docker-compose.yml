@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   btc-node:
     image: bitcoin/bitcoin:latest
@@ -10,8 +9,8 @@ services:
       -rpcuser=${BTC_RPC_USER}
       -rpcpassword=${BTC_RPC_PASSWORD}"
     ports:
-      - "${BTC_RPC_PORT}:8332"  # BTC RPC
-      - "8333:8333"  # BTC P2P
+      - "${BTC_RPC_PORT}:8332" # BTC RPC
+      - "8333:8333" # BTC P2P
     volumes:
       - ./btc/data:/data
       - ./btc/bitcoin.conf:/bitcoin.conf
@@ -48,6 +47,7 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
   bells-node:
     build:
       context: ./bells
@@ -68,11 +68,12 @@ services:
     networks:
       - blockchain_network
     healthcheck:
-      test: ["/opt/bells-3.0.0-rc2/bin/bells-cli", "-conf=/bells/bitcoin.conf", "-rpcuser=${BELLS_RPC_USER}", "-rpcpassword=${BELLS_RPC_PASSWORD}", "getblockchaininfo"]
+      test: ["CMD", "/opt/bells-3.0.0-rc2/bin/bells-cli", "-conf=/bells/bitcoin.conf", "-rpcuser=${BELLS_RPC_USER}", "-rpcpassword=${BELLS_RPC_PASSWORD}", "getblockchaininfo"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
+
 networks:
   blockchain_network:
     driver: bridge
