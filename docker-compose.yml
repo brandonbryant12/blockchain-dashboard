@@ -16,6 +16,12 @@ services:
       - ./btc/data:/data
       - ./btc/bitcoin.conf:/bitcoin.conf
     env_file: .env
+    healthcheck:
+      test: ["CMD", "/opt/bitcoin-27.1/bin/bitcoin-cli", "-conf=/bitcoin.conf", "-rpcuser=${BTC_RPC_USER}", "-rpcpassword=${BTC_RPC_PASSWORD}", "getblockchaininfo"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     networks:
       - blockchain_network
 
