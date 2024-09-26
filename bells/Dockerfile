@@ -30,4 +30,4 @@ USER bellscoinuser
 WORKDIR ${BINARY_DIR}
 
 # Expose ports
-EXPOSE 8332 8333
+EXPOSE 1003 8333

@@ -6,7 +6,6 @@ interface RpcConfig {
   user: string;
   pass: string;
   host: string;
-  port: number;
 }
 
 export class RpcClient {
@@ -17,8 +16,8 @@ export class RpcClient {
   }
 
   async call(method: string, params: any[] = []) {
-    const { protocol, user, pass, host, port } = this.config;
-    const url = `${protocol}://${host}:${port}`;
+    const { protocol, user, pass, host } = this.config;
+    const url = `${protocol}://${host}:${8332}`;
     const body = JSON.stringify({
       jsonrpc: '1.0',
       id: 'rpc-client',

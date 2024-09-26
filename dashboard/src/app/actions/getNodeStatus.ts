@@ -45,7 +45,6 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
     user: process.env.BTC_RPC_USER!,
     pass: process.env.BTC_RPC_PASSWORD!,
     host: process.env.BTC_RPC_HOST!,
-    port: parseInt(process.env.BTC_RPC_PORT!, 10),
   });
 
   const fractalClient = new RpcClient({
@@ -53,7 +52,6 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
     user: process.env.FRACTAL_RPC_USER!,
     pass: process.env.FRACTAL_RPC_PASSWORD!,
     host: process.env.FRACTAL_RPC_HOST!,
-    port: parseInt(process.env.FRACTAL_RPC_PORT!, 10),
   });
 
   const bellsClient = new RpcClient({
@@ -61,7 +59,6 @@ export async function getNodeStatus(): Promise<NodeInfo[]> {
     user: process.env.BELLS_RPC_USER!,
     pass: process.env.BELLS_RPC_PASSWORD!,
     host: process.env.BELLS_RPC_HOST!,
-    port: parseInt(process.env.BELLS_RPC_PORT!, 10),
   });
 
   // Define node details
