@@ -61,18 +61,12 @@ services:
       - ./bells/bitcoin.conf:/bells/bitcoin.conf
     networks:
       - blockchain_network
-  dashboard:
-    build:
-      context: ./dashboard
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    env_file: .env
-    networks:
-      - blockchain_network
-    depends_on:
-    - btc-node
-    - fractal-node
+    healthcheck:
+      test: ["/opt/bells-3.0.0-rc2/bin/bells-cli", "-conf=/bells/bitcoin.conf", "-rpcuser=${BELLS_RPC_USER}", "-rpcpassword=${BELLS_RPC_PASSWORD}", "getblockchaininfo"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 networks:
   blockchain_network:
     driver: bridge
