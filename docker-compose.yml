@@ -9,18 +9,15 @@ services:
       sh -c "bitcoind -conf=/bitcoin.conf -datadir=/data
       -rpcuser=$${BTC_RPC_USER}
       -rpcpassword=$${BTC_RPC_PASSWORD}"
-    environment:
-      - BTC_RPC_USER=${BTC_RPC_USER}
-      - BTC_RPC_PASSWORD=${BTC_RPC_PASSWORD}
     ports:
-      - "8332:8332"  # BTC RPC
+      - "${BTC_RPC_PORT}:8332"  # BTC RPC
       - "8333:8333"  # BTC P2P
     volumes:
       - ./btc/data:/data
       - ./btc/bitcoin.conf:/bitcoin.conf
     env_file: .env
     healthcheck:
-      test: ["CMD", "bitcoin-cli -conf=/bitcoin.conf -datadir=/data -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASSWORD} getblockchaininfo"]
+      test: ["CMD", "/opt/bitcoin-27.1/bin/bitcoin-cli -conf=/bitcoin.conf -datadir=/data -rpcuser=${BTC_RPC_USER} -rpcpassword=${BTC_RPC_PASSWORD} getblockchaininfo"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -36,17 +33,14 @@ services:
       sh -c "bitcoind -conf=/bitcoin.conf -datadir=/data -maxtipage=504576000
       -rpcuser=$${FRACTAL_RPC_USER}
       -rpcpassword=$${FRACTAL_RPC_PASSWORD}"
-    environment:
-      - FRACTAL_RPC_USER=${FRACTAL_RPC_USER}
-      - FRACTAL_RPC_PASSWORD=${FRACTAL_RPC_PASSWORD}
     ports:
-      - "18332:8332"
+      - "${FRACTAL_RPC_PORT}:8332"
       - "18333:8333"
     volumes:
       - ./fractal/data:/data
       - ./fractal/bitcoin.conf:/bitcoin.conf
     healthcheck:
-      test: ["CMD", "bitcoin-cli -conf=/bitcoin.conf -datadir=/data -rpcuser=${FRACTAL_RPC_USER} -rpcpassword=${FRACTAL_RPC_PASSWORD} getblockchaininfo"]
+      test: ["CMD", "/usr/local/bin/bitcoin-cli -conf=/bitcoin.conf -datadir=/data -rpcuser=${FRACTAL_RPC_USER} -rpcpassword=${FRACTAL_RPC_PASSWORD} getblockchaininfo"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -63,17 +57,14 @@ services:
       sh -c "./bellsd -conf=/bells/bitcoin.conf -datadir=/data
       -rpcuser=$${BELLS_RPC_USER}
       -rpcpassword=$${BELLS_RPC_PASSWORD}"
-    environment:
-      - BELLS_RPC_USER=${BELLS_RPC_USER}
-      - BELLS_RPC_PASSWORD=${BELLS_RPC_PASSWORD}
     ports:
-      - "28332:8332"
+      - "${BELLS_RPC_PORT}:8332"
       - "28333:8333"
     volumes:
       - ./bells/data:/data
       - ./bells/bitcoin.conf:/bells/bitcoin.conf
     healthcheck:
-      test: ["CMD", "bells-cli -conf=/bells/bitcoin.conf -datadir=/data -rpcuser=${BELLS_RPC_USER} -rpcpassword=${BELLS_RPC_PASSWORD} getblockchaininfo"]
+      test: ["CMD", "./bells-cli -conf=/bells/bitcoin.conf -datadir=/data -rpcuser=${BELLS_RPC_USER} -rpcpassword=${BELLS_RPC_PASSWORD} getblockchaininfo"]
       interval: 30s
       timeout: 10s
       retries: 5
