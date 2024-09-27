@@ -1,0 +1,100 @@
+# /nginx/sites-available/nodemaster.online
+
+# Redirect HTTP to HTTPS for all domains
+server {
+    listen 80;
+    server_name nodemaster.online www.nodemaster.online btc.nodemaster.online fractal.nodemaster.online bells.nodemaster.online;
+
+    return 301 https://$host$request_uri;
+}
+
+# Configuration for nodemaster.online and www.nodemaster.online
+server {
+    listen 443 ssl http2;
+    server_name nodemaster.online www.nodemaster.online;
+
+    ssl_certificate /etc/nginx/ssl/nodemaster.online.crt;
+    ssl_certificate_key /etc/nginx/ssl/nodemaster.online.key;
+
+    location / {
+        proxy_pass http://dashboard:3000; # Proxy to the dashboard service within Docker network
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+# Configuration for btc.nodemaster.online
+server {
+    listen 443 ssl http2;
+    server_name btc.nodemaster.online;
+
+    ssl_certificate /etc/nginx/ssl/nodemaster.online.crt;
+    ssl_certificate_key /etc/nginx/ssl/nodemaster.online.key;
+
+    location / {
+        proxy_pass http://btc-node:1000; # Proxy to btc-node service within Docker network
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        client_max_body_size 0;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+    }
+}
+
+# Configuration for fractal.nodemaster.online
+server {
+    listen 443 ssl http2;
+    server_name fractal.nodemaster.online;
+
+    ssl_certificate /etc/nginx/ssl/nodemaster.online.crt;
+    ssl_certificate_key /etc/nginx/ssl/nodemaster.online.key;
+
+    location / {
+        proxy_pass http://fractal-node:1001; # Proxy to fractal-node service within Docker network
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        client_max_body_size 0;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+    }
+}
+
+# Configuration for bells.nodemaster.online
+server {
+    listen 443 ssl http2;
+    server_name bells.nodemaster.online;
+
+    ssl_certificate /etc/nginx/ssl/nodemaster.online.crt;
+    ssl_certificate_key /etc/nginx/ssl/nodemaster.online.key;
+
+    location / {
+        proxy_pass http://bells-node:1002; # Proxy to bells-node service within Docker network
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        client_max_body_size 0;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+    }
+}
