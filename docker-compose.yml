@@ -91,6 +91,7 @@ services:
       - blockchain_network
 
   nginx:
+    container_name: nginx
     image: nginx:latest
     ports:
       - "80:80"
@@ -109,4 +110,5 @@ services:
 
 networks:
   blockchain_network:
+    name: blockchain_network
     driver: bridge
