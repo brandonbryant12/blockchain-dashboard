@@ -1,5 +1,16 @@
 version: '3.8'
 services:
+  nginx:
+      image: nginx:latest
+      container_name: reverse-proxy
+      ports:
+        - "80:80"
+        - "443:443"
+      volumes:
+        - ./nginx-conf:/etc/nginx/conf.d
+        - /etc/letsencrypt:/etc/letsencrypt
+      networks:
+        - blockchain_network
   btc-node:
     image: bitcoin/bitcoin:latest
     container_name: btc-node
