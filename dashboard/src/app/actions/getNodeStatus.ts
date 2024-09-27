@@ -41,27 +41,15 @@ async function fetchNodeInfo(
 export async function getNodeStatus(): Promise<NodeInfo[]> {
   // Initialize RPC Clients for each node
   const btcClient = new RpcClient({
-    protocol: 'http',
-    user: process.env.BTC_RPC_USER!,
-    pass: process.env.BTC_RPC_PASSWORD!,
-    host: process.env.BTC_RPC_HOST!,
-    port: parseInt(process.env.BTC_RPC_PORT!, 10),
+    connectionUrl: process.env.BTC_RPC_URL!,
   });
 
   const fractalClient = new RpcClient({
-    protocol: 'http',
-    user: process.env.FRACTAL_RPC_USER!,
-    pass: process.env.FRACTAL_RPC_PASSWORD!,
-    host: process.env.FRACTAL_RPC_HOST!,
-    port: parseInt(process.env.FRACTAL_RPC_PORT!, 10),
+    connectionUrl: process.env.FRACTAL_RPC_URL!,
   });
 
   const bellsClient = new RpcClient({
-    protocol: 'http',
-    user: process.env.BELLS_RPC_USER!,
-    pass: process.env.BELLS_RPC_PASSWORD!,
-    host: process.env.BELLS_RPC_HOST!,
-    port: parseInt(process.env.BELLS_RPC_PORT!, 10),
+    connectionUrl: process.env.BELLS_RPC_URL!,
   });
 
   // Define node details

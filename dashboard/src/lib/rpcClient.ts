@@ -1,12 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import fetch from 'node-fetch';
 
 interface RpcConfig {
-  protocol: string;
-  user: string;
-  pass: string;
-  host: string;
-  port: number;
+  connectionUrl: string;
 }
 
 export class RpcClient {
@@ -17,8 +12,6 @@ export class RpcClient {
   }
 
   async call(method: string, params: any[] = []) {
-    const { protocol, user, pass, host, port } = this.config;
-    const url = `${protocol}://${host}:${port}`;
     const body = JSON.stringify({
       jsonrpc: '1.0',
       id: 'rpc-client',
@@ -27,15 +20,21 @@ export class RpcClient {
     });
 
     try {
-      const response = await fetch(url, {
+      const url = new URL(this.config.connectionUrl);
+      const username = url.username;
+      const password = url.password;
+      url.username = '';
+      url.password = '';
+
+      const response = await fetch(url.toString(), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Basic ' + Buffer.from(`${user}:${pass}`).toString('base64'),
+          'Authorization': 'Basic ' + Buffer.from(`${username}:${password}`).toString('base64'),
         },
         body,
         agent: undefined, // Add agent if needed
-        signal: AbortSignal.timeout(10000) 
+        signal: AbortSignal.timeout(10000)
       });
 
       if (!response.ok) {
