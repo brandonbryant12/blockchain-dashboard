@@ -1,62 +1,80 @@
 #!/bin/bash
 
-# Exit immediately if a command exits with a non-zero status.
-set -e
-
-# Function to generate a random string
-generate_random_string() {
-    openssl rand -base64 12 | tr -dc 'a-zA-Z0-9' | head -c 16
+# Function to get existing value from .env file
+get_env_value() {
+    local key=$1
+    if [ -f .env ]; then
+        grep "^${key}=" .env | cut -d '=' -f2
+    fi
 }
 
-# Generate .env file if it doesn't exist
+# Function to set or update a value in .env file
+set_env_value() {
+    local key=$1
+    local value=$2
+    if [ -f .env ] && grep -q "^${key}=" .env; then
+        # If key exists, replace the line
+        sed -i "s|^${key}=.*|${key}=${value}|" .env
+    else
+        # If key doesn't exist, append it
+        echo "${key}=${value}" >> .env
+    fi
+}
+
+# Stop and remove containers
+sudo docker-compose down
+
+# Check and update .env file
 if [ ! -f .env ]; then
-    echo "Generating .env file..."
-    
-    # Generate random passwords
-    BTC_RPC_PASSWORD=$(generate_random_string)
-    FRACTAL_RPC_PASSWORD=$(generate_random_string)
-    BELLS_RPC_PASSWORD=$(generate_random_string)
-    
-    # Create .env file
-    cat << EOF > .env
-BTC_RPC_USER=rpcuser
-BTC_RPC_PASSWORD=$BTC_RPC_PASSWORD
-BTC_RPC_PORT=1000
-BTC_RPC_URL=http://rpcuser:$BTC_RPC_PASSWORD@btc.nodemaster.online
-
-FRACTAL_RPC_USER=rpcuser
-FRACTAL_RPC_PASSWORD=$FRACTAL_RPC_PASSWORD
-FRACTAL_RPC_PORT=1001
-FRACTAL_RPC_URL=http://rpcuser:$FRACTAL_RPC_PASSWORD@fractal.nodemaster.online
-
-BELLS_RPC_USER=rpcuser
-BELLS_RPC_PASSWORD=$BELLS_RPC_PASSWORD
-BELLS_RPC_PORT=1002
-BELLS_RPC_URL=http://rpcuser:$BELLS_RPC_PASSWORD@bells.nodemaster.online
-EOF
-
-    echo ".env file generated successfully."
-else
-    echo ".env file already exists. Skipping generation."
+    touch .env
+    echo ".env file created."
 fi
 
+# Check and set variables
+variables=(
+    "BTC_RPC_USER:btcuser$(openssl rand -hex 5)"
+    "BTC_RPC_PASSWORD:$(openssl rand -hex 16)"
+    "BTC_RPC_HOST:btc-node"
+    "BTC_RPC_PORT:8332"
+    "BELLS_RPC_USER:bellsuser$(openssl rand -hex 5)"
+    "BELLS_RPC_PASSWORD:$(openssl rand -hex 16)"
+    "BELLS_RPC_HOST:bells-node"
+    "BELLS_RPC_PORT:22556"
+    "FRACTAL_RPC_USER:fractaluser$(openssl rand -hex 5)"
+    "FRACTAL_RPC_PASSWORD:$(openssl rand -hex 16)"
+    "FRACTAL_RPC_HOST:fractal-node"
+    "FRACTAL_RPC_PORT:8332"
+    "MASTER_PASSWORD:$(openssl rand -hex 16)"
+    "JWT_SECRET:$(openssl rand -hex 32)"
+)
 
-# Create bitcoin.conf files for each node
-create_bitcoin_conf "btc" "$BTC_RPC_USER" "$BTC_RPC_PASSWORD" "$BTC_RPC_PORT"
-create_bitcoin_conf "fractal" "$FRACTAL_RPC_USER" "$FRACTAL_RPC_PASSWORD" "$FRACTAL_RPC_PORT"
-create_bitcoin_conf "bells" "$BELLS_RPC_USER" "$BELLS_RPC_PASSWORD" "$BELLS_RPC_PORT"
+for var in "${variables[@]}"; do
+    key="${var%%:*}"
+    default_value="${var#*:}"
+    current_value=$(get_env_value "$key")
+    if [ -z "$current_value" ]; then
+        set_env_value "$key" "$default_value"
+        echo "$key has been added to .env file."
+    fi
+done
 
-# Create .env file for the dashboard
-cat << EOF > dashboard/.env
-NEXT_PUBLIC_BTC_RPC_URL=$BTC_RPC_URL
-NEXT_PUBLIC_FRACTAL_RPC_URL=$FRACTAL_RPC_URL
-NEXT_PUBLIC_BELLS_RPC_URL=$BELLS_RPC_URL
-EOF
+# Set RPC URL variables without port
+btc_user=$(get_env_value "BTC_RPC_USER")
+btc_pass=$(get_env_value "BTC_RPC_PASSWORD")
+btc_host=$(get_env_value "BTC_RPC_HOST")
+set_env_value "BTC_RPC_URL" "https://${btc_user}:${btc_pass}@${btc_host}"
 
-echo "Configuration files created successfully."
+bells_user=$(get_env_value "BELLS_RPC_USER")
+bells_pass=$(get_env_value "BELLS_RPC_PASSWORD")
+bells_host=$(get_env_value "BELLS_RPC_HOST")
+set_env_value "BELLS_RPC_URL" "https://${bells_user}:${bells_pass}@${bells_host}"
 
-# Build and start the containers
-docker-compose build
-docker-compose up -d
+fractal_user=$(get_env_value "FRACTAL_RPC_USER")
+fractal_pass=$(get_env_value "FRACTAL_RPC_PASSWORD")
+fractal_host=$(get_env_value "FRACTAL_RPC_HOST")
+set_env_value "FRACTAL_RPC_URL" "https://${fractal_user}:${fractal_pass}@${fractal_host}"
 
-echo "Blockchain nodes and dashboard are now running."
+echo ".env file has been updated with any missing variables and RPC URLs (without ports)."
+
+# Start the services
+sudo docker-compose up --build -d
