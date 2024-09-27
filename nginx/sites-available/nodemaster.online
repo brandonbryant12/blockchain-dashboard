@@ -13,8 +13,8 @@ server {
     listen 443 ssl http2;
     server_name nodemaster.online www.nodemaster.online;
 
-    ssl_certificate /etc/nginx/ssl/nodemaster.online.crt;
-    ssl_certificate_key /etc/nginx/ssl/nodemaster.online.key;
+    ssl_certificate /etc/letsencrypt/live/nodemaster.online/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/nodemaster.online/privkey.pem;
 
     location / {
         proxy_pass http://dashboard:3000; # Proxy to the dashboard service within Docker network
@@ -34,8 +34,8 @@ server {
     listen 443 ssl http2;
     server_name btc.nodemaster.online;
 
-    ssl_certificate /etc/nginx/ssl/nodemaster.online.crt;
-    ssl_certificate_key /etc/nginx/ssl/nodemaster.online.key;
+    ssl_certificate /etc/letsencrypt/live/nodemaster.online/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/nodemaster.online/privkey.pem;
 
     location / {
         proxy_pass http://btc-node:1000; # Proxy to btc-node service within Docker network
@@ -56,8 +56,8 @@ server {
     listen 443 ssl http2;
     server_name fractal.nodemaster.online;
 
-    ssl_certificate /etc/nginx/ssl/nodemaster.online.crt;
-    ssl_certificate_key /etc/nginx/ssl/nodemaster.online.key;
+    ssl_certificate /etc/letsencrypt/live/nodemaster.online/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/nodemaster.online/privkey.pem;
 
     location / {
         proxy_pass http://fractal-node:1001; # Proxy to fractal-node service within Docker network
@@ -80,8 +80,8 @@ server {
     listen 443 ssl http2;
     server_name bells.nodemaster.online;
 
-    ssl_certificate /etc/nginx/ssl/nodemaster.online.crt;
-    ssl_certificate_key /etc/nginx/ssl/nodemaster.online.key;
+    ssl_certificate /etc/letsencrypt/live/nodemaster.online/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/nodemaster.online/privkey.pem;
 
     location / {
         proxy_pass http://bells-node:1002; # Proxy to bells-node service within Docker network
