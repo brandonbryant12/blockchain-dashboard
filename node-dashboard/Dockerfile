@@ -12,6 +12,12 @@ RUN npm ci && npm install -g serve
 # Copy the rest of the application code
 COPY . .
 
+# Set build-time argument for VITE_API_BASE_URL
+ARG VITE_API_BASE_URL
+
+# Ensure the environment variable is available during build
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
 # Build the app
 RUN npm run build
 
