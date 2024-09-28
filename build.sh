@@ -62,17 +62,17 @@ done
 btc_user=$(get_env_value "BTC_RPC_USER")
 btc_pass=$(get_env_value "BTC_RPC_PASSWORD")
 btc_host=$(get_env_value "BTC_RPC_HOST")
-set_env_value "BTC_RPC_URL" "https://${btc_user}:${btc_pass}@${btc_host}"
+set_env_value "BTC_RPC_URL" "http://${btc_user}:${btc_pass}@${btc_host}:8332"
 
 bells_user=$(get_env_value "BELLS_RPC_USER")
 bells_pass=$(get_env_value "BELLS_RPC_PASSWORD")
 bells_host=$(get_env_value "BELLS_RPC_HOST")
-set_env_value "BELLS_RPC_URL" "https://${bells_user}:${bells_pass}@${bells_host}"
+set_env_value "BELLS_RPC_URL" "http://${bells_user}:${bells_pass}@${bells_host}:8332"
 
 fractal_user=$(get_env_value "FRACTAL_RPC_USER")
 fractal_pass=$(get_env_value "FRACTAL_RPC_PASSWORD")
 fractal_host=$(get_env_value "FRACTAL_RPC_HOST")
-set_env_value "FRACTAL_RPC_URL" "https://${fractal_user}:${fractal_pass}@${fractal_host}"
+set_env_value "FRACTAL_RPC_URL" "http://${fractal_user}:${fractal_pass}@${fractal_host}:8332"
 
 echo ".env file has been updated with any missing variables and RPC URLs (without ports)."
 
