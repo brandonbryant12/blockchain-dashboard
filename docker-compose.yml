@@ -86,6 +86,8 @@ services:
       dockerfile: Dockerfile
     expose:
       - "3000"
+    ports:
+      - "3000:3000" 
     env_file: .env
     networks:
       - blockchain_network
@@ -96,6 +98,8 @@ services:
       dockerfile: Dockerfile
     expose:
       - "8000"
+    ports:
+      - "8000:8000"
     env_file: .env
     networks:
       - blockchain_network
