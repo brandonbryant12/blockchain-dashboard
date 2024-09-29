@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: "https://nodemaster.online/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true, // If you need to send cookies
 });
 
