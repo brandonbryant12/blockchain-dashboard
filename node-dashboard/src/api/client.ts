@@ -4,7 +4,7 @@ const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true, // If you need to send cookies
 });
-
+console.log('API Base URL:', apiClient.defaults.baseURL);
 // Request interceptor for logging
 apiClient.interceptors.request.use(
   (config) => {
