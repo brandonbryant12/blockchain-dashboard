@@ -84,8 +84,6 @@ services:
     build:
       context: ./node-dashboard
       dockerfile: Dockerfile
-      args:
-        VITE_API_BASE_URL: 'https://nodemaster.online/api'
     expose:
       - "3000"
     ports:
