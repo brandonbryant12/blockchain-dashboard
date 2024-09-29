@@ -85,11 +85,12 @@ services:
       context: ./node-dashboard
       dockerfile: Dockerfile
       args:
-        VITE_API_BASE_URL: 'http://api:8000'
+        VITE_API_BASE_URL: 'https://nodemaster.online/api'
     expose:
       - "3000"
     ports:
       - "3000:3000" 
+    env_file: .env
     networks:
       - blockchain_network
 
